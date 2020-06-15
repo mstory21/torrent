@@ -18,10 +18,20 @@ type DhtServer interface {
 	WriteStatus(io.Writer)
 }
 
+type BEP44 interface {
+	AddStorageItem(item StorageItem) bool
+	GetStorageItem(target [20]byte) (StorageItem, bool)
+	ArbitraryData(target [20]byte, seq *uint64) (ArbitraryData, error)
+}
+
 type DhtAnnounce interface {
 	Close()
 	Peers() <-chan dht.PeersValues
 }
+
+type StorageItem interface{}
+
+type ArbitraryData interface{}
 
 type anacrolixDhtServerWrapper struct {
 	*dht.Server
@@ -48,4 +58,17 @@ func (me anacrolixDhtServerWrapper) Ping(addr *net.UDPAddr) {
 	me.Server.Ping(addr, nil)
 }
 
+func (me anacrolixDhtServerWrapper) AddStorageItem(i StorageItem) bool {
+	return me.Server.AddStorageItem(i.(dht.StorageItem))
+}
+
+func (me anacrolixDhtServerWrapper) GetStorageItem(k [20]byte) (StorageItem, bool) {
+	return me.Server.GetStorageItem(k)
+}
+
+func (me anacrolixDhtServerWrapper) ArbitraryData(k [20]byte, seq *uint64) (ArbitraryData, error) {
+	return me.Server.ArbitraryData(k, seq)
+}
+
 var _ DhtServer = anacrolixDhtServerWrapper{}
+var _ BEP44 = anacrolixDhtServerWrapper{}
