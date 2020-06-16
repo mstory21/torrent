@@ -117,6 +117,8 @@ type PeerConn struct {
 	writerCond  sync.Cond
 
 	logger log.Logger
+
+	bufferSize int
 }
 
 func (cn *PeerConn) updateExpectingChunks() {
@@ -982,8 +984,8 @@ func (c *PeerConn) mainReadLoop() (err error) {
 	cl := t.cl
 
 	decoder := pp.Decoder{
-		R:         bufio.NewReaderSize(c.r, 1<<17),
-		MaxLength: 256 * 1024,
+		R:         bufio.NewReaderSize(c.r, c.bufferSize),
+		MaxLength: pp.Integer(2 * c.bufferSize),
 		Pool:      t.chunkPool,
 	}
 	for {

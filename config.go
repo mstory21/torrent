@@ -128,6 +128,9 @@ type ClientConfig struct {
 	DHTOnQuery func(query *krpc.Msg, source net.Addr) (propagate bool)
 
 	DefaultRequestStrategy RequestStrategyMaker
+
+	// Configure the connection buffer size.
+	ConnBufferSize int
 }
 
 func (cfg *ClientConfig) SetListenAddr(addr string) *ClientConfig {
@@ -169,6 +172,8 @@ func NewDefaultClientConfig() *ClientConfig {
 		Logger:         log.Default,
 
 		DefaultRequestStrategy: RequestStrategyDuplicateRequestTimeout(5 * time.Second),
+
+		ConnBufferSize: 1 << 17,
 	}
 	//cc.ConnTracker.SetNoMaxEntries()
 	//cc.ConnTracker.Timeout = func(conntrack.Entry) time.Duration { return 0 }

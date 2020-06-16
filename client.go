@@ -1237,6 +1237,7 @@ func (cl *Client) newConnection(nc net.Conn, outgoing bool, remoteAddr net.Addr,
 		writeBuffer:     new(bytes.Buffer),
 		remoteAddr:      remoteAddr,
 		network:         network,
+		bufferSize:      cl.config.ConnBufferSize,
 	}
 	c.logger = cl.logger.WithValues(c,
 		log.Debug, // I want messages to default to debug, and can set it here as it's only used by new code
